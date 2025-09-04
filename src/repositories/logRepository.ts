@@ -1,27 +1,24 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { ObjectId } from "mongodb";
+import { getCollection } from "../db/database";
 
-export interface Log extends Document {
+export interface Log {
+  _id?: ObjectId;
   source: string;
   message: string;
   createdAt: Date;
 }
 
-const LogSchema: Schema = new Schema({
-  source: { type: String, required: true },
-  message: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
-});
-
-const LogModel = mongoose.model<Log>("Log", LogSchema);
-
 class LogRepository {
+  private collection = getCollection<Log>("logs");
+
   async saveLog(source: string, message: string): Promise<Log> {
-    const log = new LogModel({ source, message });
-    return await log.save();
+    const log: Log = { source, message, createdAt: new Date() };
+    const result = await this.collection.insertOne(log);
+    return { ...log, _id: result.insertedId };
   }
 
   async getAllLogs(): Promise<Log[]> {
-    return await LogModel.find().sort({ createdAt: -1 }).exec();
+    return await this.collection.find().sort({ createdAt: -1 }).toArray();
   }
 }
 
