@@ -1,34 +1,13 @@
-const { MongoClient } = require("mongodb");
+import mongoose from "mongoose";
 
+const MONGO_URI = process.env.MONGO_ACESS || "";
 
-const uri = process.env.MONGO_ACESS;
-
-const client = new MongoClient(uri);
-
-async function connectAndInsertLog() {
+export async function connectDB(): Promise<void> {
   try {
-    await client.connect();
-
-    console.log("Connected successfully to server");
-
-    const database = client.db("logs_db"); 
-    const logsCollection = database.collection("logs"); 
-
-    
-    const logDocument = {
-      source: "application_A",
-      message: "User logged in successfully.",
-      created_at: new Date() 
-    };
-
-   
-    const result = await logsCollection.insertOne(logDocument);
-
-    console.log(`A document was inserted with the _id: ${result.insertedId}`);
-
-  } finally {
-    await client.close();
+    await mongoose.connect(MONGO_URI);
+    console.log("✅ Conectado ao MongoDB");
+  } catch (error) {
+    console.error("❌ Erro ao conectar no MongoDB:", error);
+    process.exit(1);
   }
 }
-
-connectAndInsertLog().catch(console.dir);
