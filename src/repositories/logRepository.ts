@@ -1,33 +1,28 @@
-const connectToDatabase = require("../db/database");
+import mongoose, { Schema, Document } from "mongoose";
+
+export interface Log extends Document {
+  source: string;
+  message: string;
+  createdAt: Date;
+}
+
+const LogSchema: Schema = new Schema({
+  source: { type: String, required: true },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const LogModel = mongoose.model<Log>("Log", LogSchema);
 
 class LogRepository {
-  async saveLog(source, message) {
-    const db = await connectToDatabase();
-    const logsCollection = db.collection("logs");
-
-    const logDocument = {
-      source,
-      message,
-      created_at: new Date(),
-    };
-
-    const result = await logsCollection.insertOne(logDocument);
-    return {
-      _id: result.insertedId,
-      source,
-      message,
-      created_at: logDocument.created_at,
-    };
+  async saveLog(source: string, message: string): Promise<Log> {
+    const log = new LogModel({ source, message });
+    return await log.save();
   }
 
-  async getAllLogs() {
-    const db = await connectToDatabase();
-    const logsCollection = db.collection("logs");
-    
-    const logs = await logsCollection.find({}).sort({ created_at: -1 }).toArray();
-
-    return logs;
+  async getAllLogs(): Promise<Log[]> {
+    return await LogModel.find().sort({ createdAt: -1 }).exec();
   }
 }
 
-module.exports = new LogRepository();
+export default new LogRepository();

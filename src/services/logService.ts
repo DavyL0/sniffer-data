@@ -1,28 +1,16 @@
-import mongoose, { Schema, Document } from "mongoose";
+import logRepository, { Log } from "../repositories/logRepository";
 
-export interface Log extends Document {
-  source: string;
-  message: string;
-  createdAt: Date;
-}
-
-const LogSchema: Schema = new Schema({
-  source: { type: String, required: true },
-  message: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
-});
-
-const LogModel = mongoose.model<Log>("Log", LogSchema);
-
-class LogRepository {
-  async saveLog(source: string, message: string): Promise<Log> {
-    const log = new LogModel({ source, message });
-    return await log.save();
+class LogService {
+  async createLog(source: string, message: string): Promise<Log> {
+    if (!source || !message) {
+      throw new Error("Campos 'source' e 'message' são obrigatórios");
+    }
+    return await logRepository.saveLog(source, message);
   }
 
-  async getAllLogs(): Promise<Log[]> {
-    return await LogModel.find().sort({ createdAt: -1 }).exec();
+  async listLogs(): Promise<Log[]> {
+    return await logRepository.getAllLogs();
   }
 }
 
-export default new LogRepository();
+export default new LogService();
