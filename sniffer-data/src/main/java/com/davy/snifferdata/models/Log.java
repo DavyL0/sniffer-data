@@ -1,5 +1,7 @@
 package com.davy.snifferdata.models;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,9 +12,18 @@ import java.util.Date;
 @Document(collection = "logs")
 public class Log {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private String id;
     private String source;
     private String message;
     private String level;
     private Date createdAt = new Date();
+
+    public Log() {
+    }
+
+    public Log(String level, String message) {
+        this.level = level;
+        this.message = message;
+    }
 }
