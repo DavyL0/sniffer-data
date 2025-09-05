@@ -13,5 +13,6 @@ public class Log {
     private String id;
     private String source;
     private String message;
+    private String level;
     private Date createdAt = new Date();
 }

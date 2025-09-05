@@ -8,6 +8,7 @@ class SnifferDataApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }
