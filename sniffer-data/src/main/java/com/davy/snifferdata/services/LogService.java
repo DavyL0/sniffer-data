@@ -15,16 +15,11 @@ public class LogService {
         this.logRepository = logRepository;
     }
 
-    public LogRepository createLog(String source, String message, Date createdAt) {
-        Log log = new Log();
-        log.setSource(source);
-        log.setMessage(message);
-        log.setCreatedAt(createdAt);
-
-        return (LogRepository) logRepository.save(log);
+    public Log saveLog(Log log) {
+        return logRepository.save(log);
     }
 
-    public List<Log> findBySource(String source) {
+    public List<Log> findAll() {
         return logRepository.findAll();
     }
 }
