@@ -22,7 +22,7 @@ public class Log {
     public Log() {
     }
 
-    public Log(String level, String message) {
+    public Log(String message, String level) {
         this.level = level;
         this.message = message;
     }
